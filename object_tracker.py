@@ -75,7 +75,6 @@ while True:
             continue
 
         # Check to see if enough points accumulated in buffer
-        print pts
         if counter >= 10 and i == 1 and pts[-10] is not None:
             # Compute difference between x and y and reinitialize text variables
             dX = pts[-10][0] - pts[i][0]
