@@ -77,4 +77,43 @@ while True:
         # Check to see if enough points accumulated in buffer
         if counter >= 10 and i == 1 and pts[-10] is not None:
             # Compute difference between x and y and reinitialize text variables
-            
+            dX = pts[-10][0] - pts[i][0]
+            dY = pts[-10][1] - pts[i][1]
+            (dirX, dirY) = ("", "")
+
+            # Ensure there is significant movement in the x direction
+            if np.abs(dX) > 20:
+                dirX = "East" if np.sign(dX) == 1 else "West"
+
+            # Ensure there is significant movement in the y direction
+            if np.abs(dY) > 20:
+                dirY = "North" if np.sign(dY) == 1 else "South"
+
+            # Handle case where both directions are non-empty
+            if dirX != "" and dirY != "":
+                direction = "{}-{}".format(dirY, dirX)
+
+            # Otherwise, if only one direction is non-empty
+            else:
+                direction = dirX if dirX != "" else dirY
+
+            # Compute the thickness of the line and draw connecting lines
+            thickness = int(np.sqrt(args["buffer"] / float(i + 1)) * 2.5)
+            cv2.line(frame, pts[i - 1], pts[i], (0, 0, 255), thickness)
+
+        # Show movement deltas and direction of movement on the frame
+        cv2.putText(frame, direction, (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 0.65, (0, 0, 255), 3)
+        cv2.putText(frame, "dx: {}, dy: {}".format(dX, dY), (10, frame.shape[0] - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.35, (0, 0, 255), 1)
+
+        # Show the frame to our screen and increment counter
+        cv2.imshow("Frame", frame)
+        key = cv2.waitKey(1) & 0xFF
+        counter += 1
+
+        # If 'q' key is pressed, stop the loop
+        if key == ord("q"):
+            break
+
+# Cleanup camera and close any open windows
+camera.release()
+cv2.destroyAllWindows()
