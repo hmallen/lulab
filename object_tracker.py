@@ -50,7 +50,7 @@ while True:
     mask = cv2.dilate(mask, None, iterations=2)
 
     # Find contours in mask and initialize current (x, y) center of object
-    cnts = cv2.findContours(mask,copy(), cv2,RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)[-2]
+    cnts = cv2.findContours(mask.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)[-2]
     center = None
 
     # Only proceed if at least one contour found
@@ -75,6 +75,7 @@ while True:
             continue
 
         # Check to see if enough points accumulated in buffer
+        print pts
         if counter >= 10 and i == 1 and pts[-10] is not None:
             # Compute difference between x and y and reinitialize text variables
             dX = pts[-10][0] - pts[i][0]
@@ -97,22 +98,22 @@ while True:
             else:
                 direction = dirX if dirX != "" else dirY
 
-            # Compute the thickness of the line and draw connecting lines
-            thickness = int(np.sqrt(args["buffer"] / float(i + 1)) * 2.5)
-            cv2.line(frame, pts[i - 1], pts[i], (0, 0, 255), thickness)
+        # Compute the thickness of the line and draw connecting lines
+        thickness = int(np.sqrt(args["buffer"] / float(i + 1)) * 2.5)
+        cv2.line(frame, pts[i - 1], pts[i], (0, 0, 255), thickness)
 
-        # Show movement deltas and direction of movement on the frame
-        cv2.putText(frame, direction, (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 0.65, (0, 0, 255), 3)
-        cv2.putText(frame, "dx: {}, dy: {}".format(dX, dY), (10, frame.shape[0] - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.35, (0, 0, 255), 1)
+    # Show movement deltas and direction of movement on the frame
+    cv2.putText(frame, direction, (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 0.65, (0, 0, 255), 3)
+    cv2.putText(frame, "dx: {}, dy: {}".format(dX, dY), (10, frame.shape[0] - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.35, (0, 0, 255), 1)
 
-        # Show the frame to our screen and increment counter
-        cv2.imshow("Frame", frame)
-        key = cv2.waitKey(1) & 0xFF
-        counter += 1
+    # Show the frame to our screen and increment counter
+    cv2.imshow("Frame", frame)
+    key = cv2.waitKey(1) & 0xFF
+    counter += 1
 
-        # If 'q' key is pressed, stop the loop
-        if key == ord("q"):
-            break
+    # If 'q' key is pressed, stop the loop
+    if key == ord("q"):
+        break
 
 # Cleanup camera and close any open windows
 camera.release()
