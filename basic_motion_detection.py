@@ -31,6 +31,7 @@ while True:
 
     # If frame could not be grabbed, the end of video has been reached
     if not grabbed:
+        print "End of video stream"
         break
 
     # Resize the frame, convert to grayscale, and blur it
