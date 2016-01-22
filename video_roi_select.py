@@ -6,7 +6,6 @@ import os
 # Initialize list of reference points and boolean to indicate cropping status
 refPt = []
 cropping = False
-#tempEndpoint = []
 
 def click_and_crop(event, x, y, flags, param):
     # Grab references to global variables
@@ -80,7 +79,20 @@ if len(refPt) == 2:
     cv2.imshow("ROI", roi)
     cv2.waitKey(0)
 
-    cmdString = 'ffmpeg -i object_tracking_example.mp4 -vf "crop=' + str(vidWidth) + ':' + str(vidHeight) + ':' + str(leftEdge) + ':' + str(topEdge) + '" new.mp4'
+    fileNumber = 1
+
+    while True:
+        fileName = args["video"]
+        newFile = str(fileNumber) + '-' + fileName
+        fileNumber += 1
+        filePresent = os.path.isfile(newFile)
+        newDir = fileName.split('.')[0]
+        if not os.path.exists(newDir):
+            os.makedirs(newDir)
+        if not filePresent:
+            break
+    
+    cmdString = "ffmpeg -i " + args["video"] + ' -vf "crop=' + str(vidWidth) + ':' + str(vidHeight) + ':' + str(leftEdge) + ':' + str(topEdge) + '" ' + newDir + '/' + newFile
 
     os.system(cmdString)
 
