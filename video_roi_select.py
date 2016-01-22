@@ -1,6 +1,7 @@
 # Import packages
 import argparse
 import cv2
+import os
 
 # Initialize list of reference points and boolean to indicate cropping status
 refPt = []
@@ -64,15 +65,24 @@ while True:
         break
 
 # If there are 2 reference points, crop ROI and display
-if len(refPt) == 2:
-    point1 = refPt[0][1] # roi1 - y
-    point2 = refPt[1][1] # roi2 - y
-    point3 = refPt[0][0] # roi1 - x
-    point4 = refPt[1][0] # roi2 - x
-    print str(point3) + "," + str(point1) + " to " + str(point4) + "," + str(point2)
+if len(refPt) == 2:    
+    leftEdge = refPt[0][0]
+    vidWidth = refPt[1][0] - leftEdge
+    topEdge = refPt[0][1]
+    vidHeight = refPt[1][1] - topEdge
+    
+    print "Left edge:    " + str(leftEdge)
+    print "Video width:  " + str(vidWidth)
+    print "Top edge:     " + str(topEdge)
+    print "Video height: " + str(vidHeight)
+    
     roi = clone[refPt[0][1]:refPt[1][1], refPt[0][0]:refPt[1][0]]
     cv2.imshow("ROI", roi)
     cv2.waitKey(0)
+
+    cmdString = 'ffmpeg -i object_tracking_example.mp4 -vf "crop=' + str(vidWidth) + ':' + str(vidHeight) + ':' + str(leftEdge) + ':' + str(topEdge) + '" new.mp4'
+
+    os.system(cmdString)
 
 # Close all open windows
 cv2.destroyAllWindows()
