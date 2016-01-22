@@ -14,7 +14,7 @@ def selectROI(event, x, y, flags, param):
 
     # If in ROI input mode, mouse clicked, and less than 4 points, update list of ROI points and draw circle
     if inputMode and event == cv2.EVENT_LBUTTONDOWN and len(roiPts) < 4:
-        roiPts,append((x, y))
+        roiPts.append((x, y))
         cv2.circle(frame, (x, y), 4, (0, 255, 0), 2)
         cv2.imshow("frame", frame)
 
@@ -60,7 +60,7 @@ def main():
 
             # Apply cam shift to back projection, convert points to bounding box, then draw them
             (r, roiBox) = cv2.CamShift(backProj, roiBox, termination)
-            pts = np.int0(cv2.cv.BoxPoints(r))
+            pts = np.int0(cv2.boxPoints(r))
             cv2.polylines(frame, [pts], True, (0, 255, 0), 2)
 
         # Show frame and record if user presses a key
@@ -80,7 +80,7 @@ def main():
 
             # Determine top-left and bottom-left points
             roiPts = np.array(roiPts)
-            s = roiPts.su(axis = 1)
+            s = roiPts.sum(axis = 1)
             tl = roiPts[np.argmin(s)]
             br = roiPts[np.argmax(s)]
 
